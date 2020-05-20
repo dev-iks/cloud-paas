@@ -1,6 +1,7 @@
 import datetime
 from telegram.ext import Updater, CommandHandler
 import requests
+import re
 import os
 
 
@@ -14,19 +15,39 @@ def get_url():
     return url
 
 
+def is_image(url):
+    allowed_extension = ['jpg', 'jpeg', 'png']
+    flag = False
+    for allowed_ext in allowed_extension:
+        if url.lower().endswith(allowed_ext):
+            flag = True
+            return flag
+    return flag
+
+
+def is_animation(url):
+    allowed_extension = ['mp4', 'gif']
+    flag = False
+    for allowed_ext in allowed_extension:
+        if url.lower().endswith(allowed_ext):
+            flag = True
+            return flag
+    return flag
+
+
 def bop(update, context):
+    """Send an image or animation, when the command /bop is issued."""
     url = get_url()
-    if url.endswith('.jpg') or url.endswith('.png'):
+    if is_image(url):
         update.message.reply_photo(url)
-    elif url.endswith('.mp4'):
+    elif is_animation(url):
         update.message.reply_animation(url)
 
 
 def start(update, context):
     """Send a message when the command /start is issued."""
-    chat_id = update.message.chat_id
-    update.message.reply_text('Hi!')
-
+    name = update.message.from_user.first_name
+    update.message.reply_text(f'Hey, {name}!')
 
 
 def main():
